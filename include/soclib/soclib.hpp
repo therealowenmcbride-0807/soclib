@@ -6,3 +6,4 @@
 #include <soclib/arena.hpp>
 #include <soclib/cli.hpp>
 #include <soclib/os.hpp>
+#include <soclib/console.hpp>

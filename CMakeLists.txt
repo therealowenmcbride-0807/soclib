@@ -12,6 +12,7 @@ add_library(soclib STATIC
     src/str.cpp
     src/file.cpp
     src/os.cpp
+    src/console.cpp
 )
 target_include_directories(soclib PUBLIC include)
 target_compile_options(soclib PRIVATE -fno-exceptions -fno-rtti -Wall -Wextra -Wpedantic)

@@ -29,6 +29,56 @@ struct str_view {
     }
 };
 
+namespace fmt {
+
+struct Hex {
+    uint64_t value;
+    bool prefix;
+    bool uppercase;
+};
+
+struct Bin {
+    uint64_t value;
+    bool prefix;
+};
+
+struct Upper {
+    str_view text;
+};
+
+struct Lower {
+    str_view text;
+};
+
+struct Pad {
+    str_view text;
+    size_t width;
+    char fill;
+    bool align_right;
+};
+
+// Ergonomic helper constructors
+constexpr Hex hex(uint64_t v, bool prefix = true, bool uppercase = false) {
+    return { v, prefix, uppercase };
+}
+
+constexpr Bin bin(uint64_t v, bool prefix = true) {
+    return { v, prefix };
+}
+
+inline Upper upper(str_view text) { return { text }; }
+inline Lower lower(str_view text) { return { text }; }
+
+inline Pad pad_left(str_view text, size_t width, char fill = ' ') {
+    return { text, width, fill, true };
+}
+
+inline Pad pad_right(str_view text, size_t width, char fill = ' ') {
+    return { text, width, fill, false };
+}
+
+} // namespace fmt
+
 struct str {
     char *inner = nullptr;
     size_t len = 0;
@@ -44,12 +94,12 @@ struct str {
     str &operator=(str &&other) noexcept;
     ~str();
 
-    // Memory & buffer management (implemented in str.cpp)
+    // Memory & buffer management
     bool grow(size_t min_cap);
     void clear();
     bool append(str_view view);
 
-    // Chained formatting operators (implemented in str.cpp)
+    // Chained formatting operators
     str &operator<<(str_view view);
     str &operator<<(const char *cstr);
     str &operator<<(char ch);
@@ -59,8 +109,13 @@ struct str {
     str &operator<<(uint64_t val);
     str &operator<<(double val);
     str &operator<<(bool val);
+    str &operator<<(fmt::Hex val);
+    str &operator<<(fmt::Bin val);
+    str &operator<<(fmt::Upper val);
+    str &operator<<(fmt::Lower val);
+    str &operator<<(fmt::Pad val);
 
-    // Lua-style multi-argument concatenation (must stay in header as a template)
+    // Lua-style multi-argument concatenation
     template <typename... Args>
     str &push(Args &&...args) {
         ((*this << static_cast<Args &&>(args)), ...);

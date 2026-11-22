@@ -1,6 +1,7 @@
 #include <soclib/str.hpp>
 
 #include <array>
+#include <cctype>
 #include <cinttypes>
 #include <cstdio>
 #include <cstdlib>
@@ -113,6 +114,82 @@ str &str::operator<<(double val) {
 
 str &str::operator<<(bool val) {
     append(val ? str_view("true", 4) : str_view("false", 5));
+    return *this;
+}
+
+str &str::operator<<(fmt::Hex h) {
+    std::array<char, 32> buf;
+    const char *spec = h.uppercase
+        ? (h.prefix ? "0X%" PRIX64 : "%" PRIX64)
+        : (h.prefix ? "0x%" PRIx64 : "%" PRIx64);
+    int n = std::snprintf(buf.data(), buf.size(), spec, h.value);
+    if (n > 0) append({ buf.data(), static_cast<size_t>(n) });
+    return *this;
+}
+
+str &str::operator<<(fmt::Bin b) {
+    if (b.prefix) append(str_view("0b", 2));
+    if (b.value == 0) {
+        append(str_view("0", 1));
+        return *this;
+    }
+
+    std::array<char, 64> buf;
+    size_t pos = buf.size();
+    uint64_t v = b.value;
+    while (v > 0 && pos > 0) {
+        --pos;
+        *(buf.data() + pos) = (v & 1ULL) ? '1' : '0';
+        v >>= 1;
+    }
+    append({ buf.data() + pos, buf.size() - pos });
+    return *this;
+}
+
+str &str::operator<<(fmt::Upper u) {
+    if (u.text.len == 0) return *this;
+    if (!grow(len + u.text.len)) return *this;
+
+    for (size_t i = 0; i < u.text.len; ++i) {
+        unsigned char ch = static_cast<unsigned char>(*(u.text.inner + i));
+        *(inner + len + i) = static_cast<char>(std::toupper(ch));
+    }
+    len += u.text.len;
+    *(inner + len) = '\0';
+    return *this;
+}
+
+str &str::operator<<(fmt::Lower l) {
+    if (l.text.len == 0) return *this;
+    if (!grow(len + l.text.len)) return *this;
+
+    for (size_t i = 0; i < l.text.len; ++i) {
+        unsigned char ch = static_cast<unsigned char>(*(l.text.inner + i));
+        *(inner + len + i) = static_cast<char>(std::tolower(ch));
+    }
+    len += l.text.len;
+    *(inner + len) = '\0';
+    return *this;
+}
+
+str &str::operator<<(fmt::Pad p) {
+    if (p.text.len >= p.width) {
+        append(p.text);
+        return *this;
+    }
+    size_t pad_count = p.width - p.text.len;
+    if (!grow(len + p.width)) return *this;
+
+    if (p.align_right) {
+        std::memset(inner + len, p.fill, pad_count);
+        len += pad_count;
+        append(p.text);
+    } else {
+        append(p.text);
+        std::memset(inner + len, p.fill, pad_count);
+        len += pad_count;
+        *(inner + len) = '\0';
+    }
     return *this;
 }
 
