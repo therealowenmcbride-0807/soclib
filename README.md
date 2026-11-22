@@ -11,7 +11,7 @@
 * **Explicit Memory Lifetimes:** Supports stack-backed arenas (`StackArena<N>`), heap arenas (`Arena`), and move-only RAII containers (`str`, `Vec<T>`, `File`) with zero hidden copies.
 * **Decoupled Formatting & I/O:** String formatting (`<<` chaining and Lua-style variadic `.push(...)`) happens purely in memory via `soc::str`, completely separate from file or terminal I/O.
 
-## Modules
+## Highlighted Modules
 
 | Header | Purpose |
 | :--- | :--- |
