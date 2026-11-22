@@ -1,2 +1,31 @@
-build/
+# Build directories
+/build/
+/out/
+/cmake-build-*/
+
+# CMake generated files (in case of accidental in-source builds)
 CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+CTestTestfile.cmake
+Testing/
+install_manifest.txt
+
+# Ninja & IDE / clangd caches
+build.ninja
+.ninja_deps
+.ninja_log
+compile_commands.json
+.cache/
+.vscode/
+.idea/
+
+# Compiled binaries & archives
+*.o
+*.obj
+*.a
+*.lib
+*.so
+*.dylib
+*.dll
+*.exe
