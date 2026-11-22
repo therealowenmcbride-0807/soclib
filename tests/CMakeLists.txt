@@ -1,0 +1,16 @@
+function(soc_add_test module_name)
+    set(target_name "test_${module_name}")
+    add_executable(${target_name} "${target_name}.cpp")
+    target_link_libraries(${target_name} PRIVATE soclib)
+    target_compile_options(${target_name} PRIVATE -fno-exceptions -fno-rtti -Wall -Wextra -g -fsanitize=address,undefined)
+    target_link_options(${target_name} PRIVATE -fsanitize=address,undefined)
+    add_test(NAME ${module_name} COMMAND ${target_name})
+endfunction()
+
+# Register each module's test in a single line:
+soc_add_test(str)
+soc_add_test(file)
+soc_add_test(vec)
+soc_add_test(arena)
+soc_add_test(cli)
+soc_add_test(os)
