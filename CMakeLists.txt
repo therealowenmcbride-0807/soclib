@@ -16,10 +16,6 @@ add_library(soclib STATIC
 target_include_directories(soclib PUBLIC include)
 target_compile_options(soclib PRIVATE -fno-exceptions -fno-rtti -Wall -Wextra -Wpedantic)
 
-add_executable(soclib_showcase main.cpp)
-target_link_libraries(soclib_showcase PRIVATE soclib)
-target_compile_options(soclib_showcase PRIVATE -fno-exceptions -fno-rtti -Wall -Wextra -Wpedantic)
-
 # Modular testing via CTest
 include(CTest)
 if(BUILD_TESTING)
